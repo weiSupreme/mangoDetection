@@ -130,7 +130,7 @@ class CaffeDetection:
         top_ymax = det_ymax[top_indices]
 
         result = []
-        for i in xrange(min(topn, top_conf.shape[0])):
+        for i in xrange(min(topn, top_conf.shape[0])):   # the max number of bbox is topn, so it should be adjusted according to particular dataset
             xmin = top_xmin[i] # xmin = int(round(top_xmin[i] * image.shape[1]))
             ymin = top_ymin[i] # ymin = int(round(top_ymin[i] * image.shape[0]))
             xmax = top_xmax[i] # xmax = int(round(top_xmax[i] * image.shape[1]))
@@ -289,10 +289,10 @@ def parse_args():
     parser.add_argument('--labelmap_file',
                         default='data/VOC2007/labelmap_voc.prototxt')
     parser.add_argument('--model_def',
-                        default='models/VGGNet/VOC2007/VOC2017512x512/deploy.prototxt')
-    parser.add_argument('--image_resize', default=512, type=int)
+                        default='models/VGGNet/VOC2007/VOC2017500x500/deploy.prototxt')
+    parser.add_argument('--image_resize', default=500, type=int)
     parser.add_argument('--model_weights',
-                        default='models/VGGNet/VOC2007/VOC2017512x512/VGG_VOC2007_VOC2017512x512_iter_10000.caffemodel')
+                        default='models/VGGNet/VOC2007/VOC2017500x500/VGG_VOC2007_VOC2017500x500_iter_7000.caffemodel')
     parser.add_argument('--image_file', default='examples/images/test_images/')
     return parser.parse_args()
 

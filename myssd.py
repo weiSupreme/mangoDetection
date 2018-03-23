@@ -83,8 +83,8 @@ train_data = "data/VOCdevkit/VOC2007/lmdb/VOC2007_trainval_lmdb"
 # The database file for testing data. Created by data/VOC0712/create_data.sh
 test_data = "data/VOCdevkit/VOC2007/lmdb/VOC2007_test_lmdb"
 # Specify the batch sampler.
-resize_width = 512
-resize_height = 512
+resize_width = 500
+resize_height = 500
 resize = "{}x{}".format(resize_width, resize_height)
 batch_sampler = [
         {
@@ -95,8 +95,8 @@ batch_sampler = [
         },
         {
                 'sampler': {
-                        'min_scale': 0.5,
-                        'max_scale': 1.0,
+                        'min_scale': 0.1,
+                        'max_scale': 0.6,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
                         },
@@ -108,8 +108,8 @@ batch_sampler = [
         },
         {
                 'sampler': {
-                        'min_scale': 0.5,
-                        'max_scale': 1.0,
+                        'min_scale': 0.1,
+                        'max_scale': 0.6,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
                         },
@@ -121,8 +121,8 @@ batch_sampler = [
         },
         {
                 'sampler': {
-                        'min_scale': 0.5,     #################################### Finetuning
-                        'max_scale': 1.0,
+                        'min_scale': 0.1,     #################################### Finetuning
+                        'max_scale': 0.6,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
                         },
@@ -134,8 +134,8 @@ batch_sampler = [
         },
         {
                 'sampler': {
-                        'min_scale': 0.5,
-                        'max_scale': 1.0,
+                        'min_scale': 0.1,
+                        'max_scale': 0.6,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
                         },
@@ -147,8 +147,8 @@ batch_sampler = [
         },
         {
                 'sampler': {
-                        'min_scale': 0.5,
-                        'max_scale': 1.0,
+                        'min_scale': 0.2,
+                        'max_scale': 0.8,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
                         },
@@ -160,8 +160,8 @@ batch_sampler = [
         },
         {
                 'sampler': {
-                        'min_scale': 0.5,
-                        'max_scale': 1.0,
+                        'min_scale': 0.2,
+                        'max_scale': 0.8,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
                         },
@@ -192,14 +192,20 @@ train_transform_param = {
                 'brightness_prob': 0.5,
                 'brightness_delta': 32,
                 'contrast_prob': 0.5,
-                'contrast_lower': 0.5,
-                'contrast_upper': 1.5,
+                'contrast_lower': 0.75,
+                'contrast_upper': 1.9,
                 'hue_prob': 0.5,
                 'hue_delta': 18,
                 'saturation_prob': 0.5,
-                'saturation_lower': 0.5,
+                'saturation_lower': 0.6,
                 'saturation_upper': 1.5,
                 'random_order_prob': 0.0,
+                
+                'gaussian_prob': 0.5,
+                'gaussian_size_min': 2,
+                'gaussian_size_max': 5,
+                'gaussian_sigma': 8,
+                #the definition is in the caffe.proto
                 },
         'expand_param': {
                 'prob': 0.5,
@@ -258,8 +264,8 @@ job_file = "{}/{}.sh".format(job_dir, model_name)
 # Stores the test image names and sizes. Created by data/VOC0712/create_list.sh
 name_size_file = "data/VOC2007/test_name_size.txt"
 # The pretrained model. We use the Fully convolutional reduced (atrous) VGGNet.
-#pretrain_model = "models/VGGNet/VOC2007/mix/VOC2017500x500-600p/VGG_VOC2007_VOC2017500x500_iter_22000.caffemodel"
-pretrain_model = "models/VGGNet/VGG_ILSVRC_16_layers_fc_reduced.caffemodel"
+#pretrain_model = "models/VGGNet/VOC2007/result/VOC2017500x500/VGG_VOC2007_VOC2017500x500_iter_10000.caffemodel"
+pretrain_model = "models/VGGNet/apple-0.89.caffemodel"
 # Stores LabelMapItem.
 label_map_file = "data/VOC2007/labelmap_voc.prototxt"
 
@@ -271,13 +277,13 @@ train_on_diff_gt = True
 normalization_mode = P.Loss.VALID
 code_type = P.PriorBox.CENTER_SIZE
 ignore_cross_boundary_bbox = False
-mining_type = P.MultiBoxLoss.MAX_NEGATIVE
+mining_type = P.MultiBoxLoss.MAX_NEGATIVE   #P.MultiBoxLoss.HARD_EXAMPLE  MAX_NEGATIVE #######################################fine tuning#####################
 neg_pos_ratio = 3.
 loc_weight = (neg_pos_ratio + 1.) / 4.
 multibox_loss_param = {
     'loc_loss_type': P.MultiBoxLoss.SMOOTH_L1,
     'conf_loss_type': P.MultiBoxLoss.SOFTMAX,
-    'loc_weight': loc_weight,  ##################################################  Finetuning
+    'loc_weight': 0.5,  ##########################################################fine tuning####################################3
     'num_classes': num_classes,
     'share_location': share_location,
     'match_type': P.MultiBoxLoss.PER_PREDICTION,
@@ -287,7 +293,7 @@ multibox_loss_param = {
     'use_difficult_gt': train_on_diff_gt,
     'mining_type': mining_type,
     'neg_pos_ratio': neg_pos_ratio,
-    'neg_overlap': 0.5,
+    'neg_overlap': 0.5,     ##########################################################fine tuning: 0.3 is seted in faster rcnn
     'code_type': code_type,
     'ignore_cross_boundary_bbox': ignore_cross_boundary_bbox,
     }
@@ -297,27 +303,29 @@ loss_param = {
 
 # parameters for generating priors.
 # minimum dimension of input image
-min_dim = 300
-# conv4_3 ==> 38 x 38
-# fc7 ==> 19 x 19
-# conv6_2 ==> 10 x 10
-# conv7_2 ==> 5 x 5
-# conv8_2 ==> 3 x 3
-# conv9_2 ==> 1 x 1
-mbox_source_layers = ['conv4_3', 'fc7', 'conv6_2', 'conv7_2', 'conv8_2', 'conv9_2']
+min_dim = 300        ##########################################################fine tuning####################################3
+# conv4_3 ==> 38 x 38  63
+# fc7 ==> 19 x 19   32
+# conv6_2 ==> 10 x 10    16
+# conv7_2 ==> 5 x 5    9
+# conv8_2 ==> 3 x 3   5
+# conv9_2 ==> 1 x 1    3
+mbox_source_layers = ['conv4_3', 'fc7', 'conv6_2', 'conv7_2', 'conv8_2', 'conv9_2']   #can be improved  ############################################
 # in percent %
-min_ratio = 20
-max_ratio = 90
+min_ratio = 10        ##########################################################fine tuning: expand   ###################################
+max_ratio = 60
 step = int(math.floor((max_ratio - min_ratio) / (len(mbox_source_layers) - 2)))
 min_sizes = []
 max_sizes = []
-for ratio in xrange(min_ratio, max_ratio + 1, step):
+for ratio in xrange(min_ratio, max_ratio + 1, step):  #fc7 --> conv9_2
   min_sizes.append(min_dim * ratio / 100.)
   max_sizes.append(min_dim * (ratio + step) / 100.)
-min_sizes = [min_dim * 10 / 100.] + min_sizes
+min_sizes = [min_dim * 10 / 100. - 10] + min_sizes    #conv4_3
 max_sizes = [min_dim * 20 / 100.] + max_sizes
 steps = [8, 16, 32, 64, 100, 300]
+#steps = [8, 16, 32, 56, 100, 167]   ###     don't chnage     #######################################fine tuning####################################3
 aspect_ratios = [[2], [2, 3], [2, 3], [2, 3], [2], [2]]
+#aspect_ratios = [[1.5, 2], [2, 3], [2, 3], [2, 3], [2], [2]]    #sqrt(ratio)
 # L2 normalize conv4_3.
 normalizations = [20, -1, -1, -1, -1, -1]
 # variance used to encode/decode prior bboxes.
@@ -368,11 +376,11 @@ solver_param = {
     'base_lr': 0.0008,
     'weight_decay': 0.0005,
     'lr_policy': "multistep",
-    'stepvalue': [6000, 8500, 10000],
+    'stepvalue': [8000, 10000, 11000],
     'gamma': 0.1,
     'momentum': 0.9,
     'iter_size': iter_size,
-    'max_iter': 10000,
+    'max_iter': 11000,
     'snapshot': 1000,
     'display': 50,
     'average_loss': 10,
