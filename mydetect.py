@@ -93,7 +93,7 @@ class CaffeDetection:
         self.labelmap = caffe_pb2.LabelMap()
         text_format.Merge(str(file.read()), self.labelmap)
 
-    def detect(self, image_file, conf_thresh=0.5, topn=20):  #0.5, 5
+    def detect(self, image_file, conf_thresh=0.58, topn=22):  #0.5, 5
         '''
         SSD detection
         '''
@@ -292,7 +292,7 @@ def parse_args():
                         default='models/VGGNet/VOC2007/VOC2017500x500/deploy.prototxt')
     parser.add_argument('--image_resize', default=500, type=int)
     parser.add_argument('--model_weights',
-                        default='models/VGGNet/VOC2007/VOC2017500x500/VGG_VOC2007_VOC2017500x500_iter_7000.caffemodel')
+                        default='models/VGGNet/VOC2007/VOC2017500x500/VGG_VOC2007_VOC2017500x500_iter_12000.caffemodel')
     parser.add_argument('--image_file', default='examples/images/test_images/')
     return parser.parse_args()
 
