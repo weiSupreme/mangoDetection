@@ -289,10 +289,10 @@ def parse_args():
     parser.add_argument('--labelmap_file',
                         default='data/VOC2007/labelmap_voc.prototxt')
     parser.add_argument('--model_def',
-                        default='models/VGGNet/VOC2007/VOC2017400x400/deploy.prototxt')
-    parser.add_argument('--image_resize', default=400, type=int)
+                        default='models/VGGNet/VOC2007/VOC2017300x300/deploy.prototxt')
+    parser.add_argument('--image_resize', default=300, type=int)
     parser.add_argument('--model_weights',
-                        default='models/VGGNet/VOC2007/VOC2017400x400/VGG_VOC2007_VOC2017400x400_iter_8000.caffemodel')
+                        default='models/VGGNet/VOC2007/VOC2017300x300/VGG_VOC2007_VOC2017300x300_iter_12000.caffemodel')
     parser.add_argument('--image_file', default='examples/images/test_images/')
     return parser.parse_args()
 
