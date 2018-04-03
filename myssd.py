@@ -83,8 +83,8 @@ train_data = "data/VOCdevkit/VOC2007/lmdb/VOC2007_trainval_lmdb"
 # The database file for testing data. Created by data/VOC0712/create_data.sh
 test_data = "data/VOCdevkit/VOC2007/lmdb/VOC2007_test_lmdb"
 # Specify the batch sampler.
-resize_width = 300
-resize_height = 300
+resize_width = 500
+resize_height = 500
 resize = "{}x{}".format(resize_width, resize_height)
 batch_sampler = [
         {
@@ -343,7 +343,7 @@ gpulist = gpus.split(",")
 num_gpus = len(gpulist)
 
 # Divide the mini-batch to different GPUs.
-batch_size = 32
+batch_size = 8
 accum_batch_size = 32
 iter_size = accum_batch_size / batch_size
 solver_mode = P.Solver.CPU
@@ -376,7 +376,7 @@ solver_param = {
     'base_lr': 0.0008,
     'weight_decay': 0.0005,
     'lr_policy': "multistep",
-    'stepvalue': [9000, 11500, 12000],
+    'stepvalue': [8000, 11000, 12000],
     'gamma': 0.1,
     'momentum': 0.9,
     'iter_size': iter_size,
@@ -391,7 +391,7 @@ solver_param = {
     'snapshot_after_train': True,
     # Test parameters
     'test_iter': [test_iter],
-    'test_interval': 200,
+    'test_interval': 100,
     'eval_type': "detection",
     'ap_version': "11point",  #MaxIntegral 11point
     'test_initialization': False,
