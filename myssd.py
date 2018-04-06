@@ -95,7 +95,33 @@ batch_sampler = [
         },
         {
                 'sampler': {
-                        'min_scale': 0.1,
+                        'min_scale': 0.05,
+                        'max_scale': 0.6,
+                        'min_aspect_ratio': 0.5,
+                        'max_aspect_ratio': 2.0,
+                        },
+                'sample_constraint': {
+                        'min_jaccard_overlap': 0.02,
+                        },
+                'max_trials': 50,
+                'max_sample': 1,
+        },
+        {
+                'sampler': {
+                        'min_scale': 0.05,
+                        'max_scale': 0.6,
+                        'min_aspect_ratio': 0.5,
+                        'max_aspect_ratio': 2.0,
+                        },
+                'sample_constraint': {
+                        'min_jaccard_overlap': 0.05,
+                        },
+                'max_trials': 50,
+                'max_sample': 1,
+        },
+        {
+                'sampler': {
+                        'min_scale': 0.05,     #################################### Finetuning
                         'max_scale': 0.6,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
@@ -108,7 +134,7 @@ batch_sampler = [
         },
         {
                 'sampler': {
-                        'min_scale': 0.1,
+                        'min_scale': 0.05,
                         'max_scale': 0.6,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
@@ -121,7 +147,7 @@ batch_sampler = [
         },
         {
                 'sampler': {
-                        'min_scale': 0.1,     #################################### Finetuning
+                        'min_scale': 0.1,
                         'max_scale': 0.6,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
@@ -134,34 +160,8 @@ batch_sampler = [
         },
         {
                 'sampler': {
-                        'min_scale': 0.1,
+                        'min_scale': 0.2,
                         'max_scale': 0.6,
-                        'min_aspect_ratio': 0.5,
-                        'max_aspect_ratio': 2.0,
-                        },
-                'sample_constraint': {
-                        'min_jaccard_overlap': 0.7,
-                        },
-                'max_trials': 50,
-                'max_sample': 1,
-        },
-        {
-                'sampler': {
-                        'min_scale': 0.2,
-                        'max_scale': 0.8,
-                        'min_aspect_ratio': 0.5,
-                        'max_aspect_ratio': 2.0,
-                        },
-                'sample_constraint': {
-                        'min_jaccard_overlap': 0.9,
-                        },
-                'max_trials': 50,
-                'max_sample': 1,
-        },
-        {
-                'sampler': {
-                        'min_scale': 0.2,
-                        'max_scale': 0.8,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
                         },
@@ -343,7 +343,7 @@ gpulist = gpus.split(",")
 num_gpus = len(gpulist)
 
 # Divide the mini-batch to different GPUs.
-batch_size = 16
+batch_size = 8
 accum_batch_size = 32
 iter_size = accum_batch_size / batch_size
 solver_mode = P.Solver.CPU
@@ -376,11 +376,11 @@ solver_param = {
     'base_lr': 0.0008,
     'weight_decay': 0.0005,
     'lr_policy': "multistep",
-    'stepvalue': [6000, 7500, 8000],
+    'stepvalue': [13000, 16000, 17000],
     'gamma': 0.1,
     'momentum': 0.9,
     'iter_size': iter_size,
-    'max_iter': 8000,
+    'max_iter': 17000,
     'snapshot': 1000,
     'display': 50,
     'average_loss': 10,
