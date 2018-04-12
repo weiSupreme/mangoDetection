@@ -95,8 +95,8 @@ batch_sampler = [
         },
         {
                 'sampler': {
-                        'min_scale': 0.1,
-                        'max_scale': 0.6,
+                        'min_scale': 0.3,
+                        'max_scale': 1.0,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
                         },
@@ -108,8 +108,8 @@ batch_sampler = [
         },
         {
                 'sampler': {
-                        'min_scale': 0.1,
-                        'max_scale': 0.6,
+                        'min_scale': 0.3,
+                        'max_scale': 1.0,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
                         },
@@ -121,8 +121,8 @@ batch_sampler = [
         },
         {
                 'sampler': {
-                        'min_scale': 0.1,     #################################### Finetuning
-                        'max_scale': 0.6,
+                        'min_scale': 0.3,
+                        'max_scale': 1.0,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
                         },
@@ -134,8 +134,8 @@ batch_sampler = [
         },
         {
                 'sampler': {
-                        'min_scale': 0.1,
-                        'max_scale': 0.6,
+                        'min_scale': 0.3,
+                        'max_scale': 1.0,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
                         },
@@ -147,8 +147,8 @@ batch_sampler = [
         },
         {
                 'sampler': {
-                        'min_scale': 0.2,
-                        'max_scale': 0.8,
+                        'min_scale': 0.3,
+                        'max_scale': 1.0,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
                         },
@@ -160,8 +160,8 @@ batch_sampler = [
         },
         {
                 'sampler': {
-                        'min_scale': 0.2,
-                        'max_scale': 0.8,
+                        'min_scale': 0.3,
+                        'max_scale': 1.0,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
                         },
@@ -174,7 +174,7 @@ batch_sampler = [
         ]
 train_transform_param = {
         'mirror': True,
-        'mean_value': [104, 117, 123],  #[104, 117, 123]
+        'mean_value': [104, 117, 123],
         'resize_param': {
                 'prob': 1,
                 'resize_mode': P.Resize.WARP,
@@ -192,16 +192,16 @@ train_transform_param = {
                 'brightness_prob': 0.5,
                 'brightness_delta': 32,
                 'contrast_prob': 0.5,
-                'contrast_lower': 0.75,
-                'contrast_upper': 1.9,
+                'contrast_lower': 0.5,
+                'contrast_upper': 1.5,
                 'hue_prob': 0.5,
                 'hue_delta': 18,
                 'saturation_prob': 0.5,
-                'saturation_lower': 0.6,
+                'saturation_lower': 0.5,
                 'saturation_upper': 1.5,
                 'random_order_prob': 0.0,
                 
-                'gaussian_prob': 0.5,
+                'gaussian_prob': 0,
                 'gaussian_size_min': 2,
                 'gaussian_size_max': 5,
                 'gaussian_sigma': 8,
@@ -283,7 +283,7 @@ loc_weight = (neg_pos_ratio + 1.) / 4.
 multibox_loss_param = {
     'loc_loss_type': P.MultiBoxLoss.SMOOTH_L1,
     'conf_loss_type': P.MultiBoxLoss.SOFTMAX,
-    'loc_weight': 0.5,  ##########################################################fine tuning####################################3
+    'loc_weight': loc_weight,  ##########################################################fine tuning####################################3
     'num_classes': num_classes,
     'share_location': share_location,
     'match_type': P.MultiBoxLoss.PER_PREDICTION,
@@ -312,15 +312,15 @@ min_dim = 300        ##########################################################f
 # conv9_2 ==> 1 x 1    3
 mbox_source_layers = ['conv4_3', 'fc7', 'conv6_2', 'conv7_2', 'conv8_2', 'conv9_2']   #can be improved  ############################################
 # in percent %
-min_ratio = 10        ##########################################################fine tuning: expand   ###################################
-max_ratio = 60
+min_ratio = 20        ##########################################################fine tuning: expand   ###################################
+max_ratio = 90
 step = int(math.floor((max_ratio - min_ratio) / (len(mbox_source_layers) - 2)))
 min_sizes = []
 max_sizes = []
 for ratio in xrange(min_ratio, max_ratio + 1, step):  #fc7 --> conv9_2
   min_sizes.append(min_dim * ratio / 100.)
   max_sizes.append(min_dim * (ratio + step) / 100.)
-min_sizes = [min_dim * 10 / 100. - 10] + min_sizes    #conv4_3
+min_sizes = [min_dim * 10 / 100.] + min_sizes    #conv4_3
 max_sizes = [min_dim * 20 / 100.] + max_sizes
 steps = [8, 16, 32, 64, 100, 300]
 #steps = [8, 16, 32, 56, 100, 167]   ###     don't chnage     #######################################fine tuning####################################3
@@ -338,12 +338,12 @@ clip = False
 
 # Solver parameters.
 # Defining which GPUs to use.
-gpus = "1"
+gpus = "0"
 gpulist = gpus.split(",")
 num_gpus = len(gpulist)
 
 # Divide the mini-batch to different GPUs.
-batch_size = 32
+batch_size = 10
 accum_batch_size = 32
 iter_size = accum_batch_size / batch_size
 solver_mode = P.Solver.CPU
@@ -376,11 +376,11 @@ solver_param = {
     'base_lr': 0.0008,
     'weight_decay': 0.0005,
     'lr_policy': "multistep",
-    'stepvalue': [9000, 11500, 12000],
+    'stepvalue': [11000, 16000, 20000],
     'gamma': 0.1,
     'momentum': 0.9,
     'iter_size': iter_size,
-    'max_iter': 12000,
+    'max_iter': 20000,
     'snapshot': 1000,
     'display': 50,
     'average_loss': 10,

@@ -292,7 +292,7 @@ def parse_args():
                         default='models/VGGNet/VOC2007/VOC2017300x300/deploy.prototxt')
     parser.add_argument('--image_resize', default=300, type=int)
     parser.add_argument('--model_weights',
-                        default='models/VGGNet/VOC2007/VOC2017300x300/VGG_VOC2007_VOC2017300x300_iter_12000.caffemodel')
+                        default='models/VGGNet/VOC2007/VOC2017300x300/VGG_VOC2007_VOC2017300x300_iter_20000.caffemodel')
     parser.add_argument('--image_file', default='examples/images/test_images/')
     return parser.parse_args()
 
