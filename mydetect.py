@@ -93,7 +93,7 @@ class CaffeDetection:
         self.labelmap = caffe_pb2.LabelMap()
         text_format.Merge(str(file.read()), self.labelmap)
 
-    def detect(self, image_file, conf_thresh=0.4, topn=22):  #0.5, 5
+    def detect(self, image_file, conf_thresh=0.5, topn=22):  #0.5, 5
         '''
         SSD detection
         '''
@@ -281,19 +281,25 @@ def main(args):
     print 'recall = ', R / 10.
     print 'F1 = ', 2 * P * R / (P+R) / 10.
 
-
+VGG16 = 1
 def parse_args():
     '''parse args'''
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu_id', type=int, default=0, help='gpu id')
     parser.add_argument('--labelmap_file',
                         default='data/VOC2007/labelmap_voc.prototxt')
-    parser.add_argument('--model_def',
-                        default='models/ZFNet/VOC2007/SSDzf_400x400/deploy.prototxt')
     parser.add_argument('--image_resize', default=400, type=int)
-    parser.add_argument('--model_weights',
-                        default='models/ZFNet/VOC2007/SSDzf_400x400/ZF_VOC2007_SSDzf_400x400_iter_20000.caffemodel')
     parser.add_argument('--image_file', default='examples/images/test_images/')
+    if VGG16 == 1:
+        parser.add_argument('--model_def',
+                            default='models/VGGNet/VOC2007/VOC2017400x400/deploy.prototxt')
+        parser.add_argument('--model_weights',
+                        default='models/VGGNet/VOC2007/VOC2017400x400/VGG_VOC2007_VOC2017400x400_iter_10000.caffemodel')
+    else:
+        parser.add_argument('--model_def',
+                            default='models/ZFNet/VOC2007/SSDzf_400x400/deploy.prototxt')
+        parser.add_argument('--model_weights',
+                        default='models/ZFNet/VOC2007/SSDzf_400x400/ZF_VOC2007_SSDzf_400x400_iter_20000.caffemodel')
     return parser.parse_args()
 
 if __name__ == '__main__':
