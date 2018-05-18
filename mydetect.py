@@ -151,6 +151,7 @@ def main(args):
     predict_num = 0
     gt_num = 0
     true_positive = 0
+    time_all = 0
     iou_thresh = 0.2
     t = 0
     
@@ -163,7 +164,8 @@ def main(args):
         t = (end -start)
         print ('Detection took {:.3f}s for ' + file_name_list[i]).format(t)
         #print "time of", file_name_list[i], ': ', t
-        
+        time_all += t
+        #continue
         img = Image.open(args.image_file+file_name_list[i])
         draw = ImageDraw.Draw(img)
         width, height = img.size
@@ -177,10 +179,10 @@ def main(args):
         existed_box_idx = 0
         for item in result:
             predict_num += 1
-            xmin = int(round(item[0] * width))
-            ymin = int(round(item[1] * height))
-            xmax = int(round(item[2] * width))
-            ymax = int(round(item[3] * height))
+            xmin = int(round(item[0] * width)) * 1.25
+            ymin = int(round(item[1] * height)) * 1.25
+            xmax = int(round(item[2] * width)) * 1.25
+            ymax = int(round(item[3] * height)) * 1.25
             #draw.rectangle([xmin, ymin, xmax, ymax], outline=(255, 0, 0))
             #draw.text([xmin, ymin], item[-1] + str(item[-2]), (0, 0, 255))
             #print [center_x, center_y]
@@ -214,10 +216,10 @@ def main(args):
                 existed_box[existed_box_idx] = iou_idx_arr[max_value_idx]
                 existed_box_idx += 1
             if flag == 1:
-                draw.rectangle([xmin, ymin, xmax, ymax], outline=(0, 255, 0))  #true positive
+                draw.rectangle([int(xmin / 1.25), int(ymin / 1.25), int(xmax / 1.25), int(ymax / 1.25)], outline=(0, 255, 0))  #true positive
                 true_positive += 1
             else:
-                draw.rectangle([xmin, ymin, xmax, ymax], outline=(255, 0, 0))   #false positive
+                draw.rectangle([int(xmin / 1.25), int(ymin / 1.25), int(xmax / 1.25), int(ymax / 1.25)], outline=(255, 0, 0))   #false positive
                 #draw.text([xmin, ymin], item[-1] + str(item[-2]), (255, 255, 255))
         #print "detection: ", existed_box
         existed_box = [0] * 50
@@ -240,10 +242,10 @@ def main(args):
             iou_arr = [0] * 50
             iou_idx_arr = [0] * 50
             for item in result:
-                xmin = int(round(item[0] * width))
-                ymin = int(round(item[1] * height))
-                xmax = int(round(item[2] * width))
-                ymax = int(round(item[3] * height))
+                xmin = int(round(item[0] * width)) * 1.25
+                ymin = int(round(item[1] * height)) * 1.25
+                xmax = int(round(item[2] * width)) * 1.25
+                ymax = int(round(item[3] * height)) * 1.25
                 iou_arr[result_box_idx] = IOU(xmin, ymin, xmax-xmin, ymax-ymin, xminT, yminT, xmaxT-xminT, ymaxT-yminT)
                 iou_idx_arr[result_box_idx] = result_box_idx
                 #print [xmin, ymin]
@@ -261,7 +263,7 @@ def main(args):
                 existed_box[existed_box_idx] = iou_idx_arr[max_value_idx]
                 existed_box_idx += 1    
             if flag == 0:
-                draw.rectangle([xminT, yminT, xmaxT, ymaxT], outline=(0, 0, 255))  # false negative
+                draw.rectangle([int(xminT/1.25), int(yminT/1.25), int(xmaxT/1.25), int(ymaxT/1.25)], outline=(0, 0, 255))  # false negative
             flag = 0 
         out.close()
         #print "gt: ", existed_box
@@ -280,6 +282,7 @@ def main(args):
     print 'precision = ', P / 10.
     print 'recall = ', R / 10.
     print 'F1 = ', 2 * P * R / (P+R) / 10.
+    print 'ave_fps = ', 168 / time_all
 
 VGG16 = 1
 def parse_args():
@@ -289,17 +292,17 @@ def parse_args():
     parser.add_argument('--labelmap_file',
                         default='data/VOC2007/labelmap_voc.prototxt')
     parser.add_argument('--image_resize', default=400, type=int)
-    parser.add_argument('--image_file', default='examples/images/test_images/')
+    parser.add_argument('--image_file', default='examples/images/test_images400/')
     if VGG16 == 1:
         parser.add_argument('--model_def',
                             default='models/VGGNet/VOC2007/VOC2017400x400/deploy.prototxt')
         parser.add_argument('--model_weights',
-                        default='models/VGGNet/VOC2007/VOC2017400x400/VGG_VOC2007_VOC2017400x400_iter_10000.caffemodel')
+                        default='models/VGGNet/VOC2007/VOC2017400x400/VGG_VOC2007_VOC2017400x400_iter_19000.caffemodel')
     else:
         parser.add_argument('--model_def',
                             default='models/ZFNet/VOC2007/SSDzf_400x400/deploy.prototxt')
         parser.add_argument('--model_weights',
-                        default='models/ZFNet/VOC2007/SSDzf_400x400/ZF_VOC2007_SSDzf_400x400_iter_20000.caffemodel')
+                        default='models/ZFNet/VOC2007/SSDzf_400x400/ZF_VOC2007_SSDzf_400x400_iter_24000.caffemodel')
     return parser.parse_args()
 
 if __name__ == '__main__':
