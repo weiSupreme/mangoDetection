@@ -83,8 +83,8 @@ train_data = "data/VOCdevkit/VOC2007/lmdb/VOC2007_trainval_lmdb"
 # The database file for testing data. Created by data/VOC0712/create_data.sh
 test_data = "data/VOCdevkit/VOC2007/lmdb/VOC2007_test_lmdb"
 # Specify the batch sampler.
-resize_width = 400
-resize_height = 400
+resize_width = 300
+resize_height = 300
 resize = "{}x{}".format(resize_width, resize_height)
 batch_sampler = [
         {
@@ -96,7 +96,7 @@ batch_sampler = [
         {
                 'sampler': {
                         'min_scale': 0.05,
-                        'max_scale': 0.6,
+                        'max_scale': 1,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
                         },
@@ -109,7 +109,7 @@ batch_sampler = [
         {
                 'sampler': {
                         'min_scale': 0.05,
-                        'max_scale': 0.6,
+                        'max_scale': 1,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
                         },
@@ -122,7 +122,7 @@ batch_sampler = [
         {
                 'sampler': {
                         'min_scale': 0.05,     #################################### Finetuning
-                        'max_scale': 0.6,
+                        'max_scale': 1,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
                         },
@@ -135,7 +135,7 @@ batch_sampler = [
         {
                 'sampler': {
                         'min_scale': 0.05,
-                        'max_scale': 0.6,
+                        'max_scale': 1,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
                         },
@@ -148,7 +148,7 @@ batch_sampler = [
         {
                 'sampler': {
                         'min_scale': 0.1,
-                        'max_scale': 0.6,
+                        'max_scale': 1,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
                         },
@@ -161,12 +161,12 @@ batch_sampler = [
         {
                 'sampler': {
                         'min_scale': 0.2,
-                        'max_scale': 0.6,
+                        'max_scale': 1,
                         'min_aspect_ratio': 0.5,
                         'max_aspect_ratio': 2.0,
                         },
                 'sample_constraint': {
-                        'max_jaccard_overlap': 1.0,
+                        'max_jaccard_overlap': 0.7,
                         },
                 'max_trials': 50,
                 'max_sample': 1,
@@ -192,16 +192,16 @@ train_transform_param = {
                 'brightness_prob': 0.5,
                 'brightness_delta': 32,
                 'contrast_prob': 0.5,
-                'contrast_lower': 0.75,
-                'contrast_upper': 1.9,
+                'contrast_lower': 0.5,
+                'contrast_upper': 1.5,
                 'hue_prob': 0.5,
                 'hue_delta': 18,
                 'saturation_prob': 0.5,
-                'saturation_lower': 0.6,
+                'saturation_lower': 0.5,
                 'saturation_upper': 1.5,
                 'random_order_prob': 0.0,
                 
-                'gaussian_prob': 0.5,
+                'gaussian_prob': 0.3,
                 'gaussian_size_min': 2,
                 'gaussian_size_max': 5,
                 'gaussian_sigma': 8,
@@ -238,18 +238,18 @@ else:
     base_lr = 0.00004
 
 # Modify the job name if you want.
-job_name = "VOC2017{}".format(resize)
+job_name = "almond{}".format(resize)
 # The name of the model. Modify it if you want.
-model_name = "VGG_VOC2007_{}".format(job_name)
+model_name = "almond_{}".format(job_name)
 
 # Directory which stores the model .prototxt file.
-save_dir = "models/VGGNet/VOC2007/{}".format(job_name)
+save_dir = "models/VGGNet/almond/{}".format(job_name)
 # Directory which stores the snapshot of models.
-snapshot_dir = "models/VGGNet/VOC2007/{}".format(job_name)
+snapshot_dir = "models/VGGNet/almond/{}".format(job_name)
 # Directory which stores the job script and log file.
-job_dir = "jobs/VGGNet/VOC2007/{}".format(job_name)
+job_dir = "jobs/VGGNet/almond/{}".format(job_name)
 # Directory which stores the detection results.
-output_result_dir = "{}/data/VOCdevkit/results/VOC2007/{}/Main".format(os.environ['HOME'], job_name)
+output_result_dir = "{}/data/VOCdevkit/results/almond/{}/Main".format(os.environ['HOME'], job_name)
 
 # model definition files.
 train_net_file = "{}/train.prototxt".format(save_dir)
@@ -265,7 +265,7 @@ job_file = "{}/{}.sh".format(job_dir, model_name)
 name_size_file = "data/VOC2007/test_name_size.txt"
 # The pretrained model. We use the Fully convolutional reduced (atrous) VGGNet.
 #pretrain_model = "models/VGGNet/VOC2007/result/VOC2017500x500/VGG_VOC2007_VOC2017500x500_iter_10000.caffemodel"
-pretrain_model = "models/VGGNet/apple-0.89.caffemodel"
+pretrain_model = "models/VGGNet/VGG_ILSVRC_16_layers_fc_reduced.caffemodel"
 # Stores LabelMapItem.
 label_map_file = "data/VOC2007/labelmap_voc.prototxt"
 
@@ -283,7 +283,7 @@ loc_weight = (neg_pos_ratio + 1.) / 4.
 multibox_loss_param = {
     'loc_loss_type': P.MultiBoxLoss.SMOOTH_L1,
     'conf_loss_type': P.MultiBoxLoss.SOFTMAX,
-    'loc_weight': loc_weight,  ##########################################################fine tuning####################################3
+    'loc_weight': 0.5,  ##########################################################fine tuning####################################3
     'num_classes': num_classes,
     'share_location': share_location,
     'match_type': P.MultiBoxLoss.PER_PREDICTION,
@@ -320,7 +320,7 @@ max_sizes = []
 for ratio in xrange(min_ratio, max_ratio + 1, step):  #fc7 --> conv9_2
   min_sizes.append(min_dim * ratio / 100.)
   max_sizes.append(min_dim * (ratio + step) / 100.)
-min_sizes = [min_dim * 10 / 100. - 10] + min_sizes    #conv4_3
+min_sizes = [min_dim * 10 / 100. - 15] + min_sizes    #conv4_3
 max_sizes = [min_dim * 20 / 100.] + max_sizes
 steps = [8, 16, 32, 64, 100, 300]
 #steps = [8, 16, 32, 56, 100, 167]   ###     don't chnage     #######################################fine tuning####################################3
@@ -365,7 +365,7 @@ elif normalization_mode == P.Loss.FULL:
   base_lr *= 200.
 
 # Evaluate on whole test set.
-num_test_image = 168
+num_test_image = 103
 test_batch_size = 8
 # Ideally test_batch_size should be divisible by num_test_image,
 # otherwise mAP will be slightly off the true value.
@@ -376,13 +376,13 @@ solver_param = {
     'base_lr': 0.0008,
     'weight_decay': 0.0005,
     'lr_policy': "multistep",
-    'stepvalue': [25000, 28000, 30000],
+    'stepvalue': [3000, 3500, 4000],
     'gamma': 0.1,
     'momentum': 0.9,
     'iter_size': iter_size,
-    'max_iter': 30000,
-    'snapshot': 1000,
-    'display': 50,
+    'max_iter': 4000,
+    'snapshot': 500,
+    'display': 20,
     'average_loss': 10,
     'type': "SGD",
     'solver_mode': solver_mode,
@@ -391,9 +391,10 @@ solver_param = {
     'snapshot_after_train': True,
     # Test parameters
     'test_iter': [test_iter],
-    'test_interval': 200,
+    'test_interval': 100,
     'eval_type': "detection",
     'ap_version': "11point",  #MaxIntegral 11point
+    'show_pr_value': True,
     'test_initialization': False,
     }
 
